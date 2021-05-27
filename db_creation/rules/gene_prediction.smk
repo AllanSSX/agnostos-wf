@@ -4,13 +4,13 @@ rule gene_prediction:
     params:
         prodigal_mode = "meta",
         prodigal_bin = config["prodigal_bin"],
-        rename_orfs = "scripts/rename_orfs.awk",
-        partial_info = "scripts/get_orf_partial_info.awk",
+        rename_orfs = config["scripts"] + "/rename_orfs.awk",
+        partial_info = config["scripts"] + "/get_orf_partial_info.awk",
         gff_output = config["rdir"] + "/gene_prediction/{smp}_orfs_info.gff",
-        tmp = config["rdir"] + "/gene_prediction/{smp}_tmpl",
+        tmpfa = config["rdir"] + "/gene_prediction/{smp}_tmpl",
         outdir = config["rdir"] + "/gene_prediction"
-    conda:
-        config["conda_env"]
+    container:
+        "docker://sebimer/agnostos-conda:devel"
     output:
         fa = config["rdir"] + "/gene_prediction/{smp}_orfs.fasta",
         orfs = config["rdir"] + "/gene_prediction/{smp}_orfs.txt",
@@ -26,9 +26,11 @@ rule gene_prediction:
         set -e
 
         {params.prodigal_bin} -i {input.contigs} -a {output.fa} -m -p {params.prodigal_mode} -f gff  -o {params.gff_output} -q 2>{log.err} 1>{log.out}
+        
+        awk -f {params.rename_orfs} {output.fa} > {params.tmpfa}
 
-        awk -f {params.rename_orfs} {output.fa} > {params.tmp} && mv {params.tmp} {output.fa}
-
+        mv {params.tmpfa} {output.fa}
+        
         grep '^>' {output.fa} | sed "s/^>//" > {output.orfs}
 
         awk -f {params.partial_info} {params.gff_output} > {output.partial}
