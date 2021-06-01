@@ -3,20 +3,16 @@ channels:
   - conda-forge
   - bioconda
   - intel
-  - biocore
-  - ostrokach-forge
   - r
 dependencies:
-  - impi_rt=2021.2.0
+  - impi_rt=2019.9=intel_304
   - parallel
   - bbmap
   - prodigal
   - seqtk
   - seqkit
   - datamash
-  - snakemake
   - coreutils
-  - hmmer
   - ripgrep
   - mcl
   - pandoc
