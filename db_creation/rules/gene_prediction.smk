@@ -25,7 +25,7 @@ rule gene_prediction:
         set -x
         set -e
 
-        {params.prodigal_bin} -i {input.contigs} -a {output.fa} -m -p {params.prodigal_mode} -f gff  -o {params.gff_output} -q 2>{log.err} 1>{log.out}
+        prodigal -i {input.contigs} -a {output.fa} -m -p {params.prodigal_mode} -f gff  -o {params.gff_output} -q 2>{log.err} 1>{log.out}
         
         awk -f {params.rename_orfs} {output.fa} > {params.tmpfa}
 
