@@ -2,6 +2,7 @@ rule pfam_annotation_results:
     input:
         annot=config["rdir"] + "/pfam_annotation/{smp}_pfam.tsv"
     params:
+        hmmsearch_res_parser = config["db_create_scripts"] + "/hmmsearch_res_parser.sh",
         evalue=1e-05,
         coverage=0.4
     output:
@@ -11,7 +12,7 @@ rule pfam_annotation_results:
     benchmark:
         "benchmarks/pfam_annotation/{smp}.annot_res.tsv"
     shell:
-        "scripts/hmmsearch_res_parser.sh {input.annot} {params.evalue} {params.coverage} > {output.pf_annot} 2>>{log.err}"
+        "{params.hmmsearch_res_parser} {input.annot} {params.evalue} {params.coverage} > {output.pf_annot} 2>>{log.err}"
 
 rule pfam_annotation_res_done:
     input:
